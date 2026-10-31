@@ -20,8 +20,7 @@
       justify-content: center;
       align-items: center;
       background-color: #000;
-      /* Imagem de fundo da Lipe Space */
-      background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('image_612e99.jpg');
+      background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('image_612e99.png');
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain;
@@ -73,4 +72,133 @@
       padding: 12px;
       border-radius: 8px;
       border: 1px solid #444;
-      background:
+      background: #222;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: #e60000;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      background-color: #e60000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background-color: #cc0000;
+    }
+
+    button.btn-deep-link {
+      background-color: transparent;
+      border: 1px solid #e60000;
+      color: #e60000;
+      margin-top: 8px;
+    }
+
+    button.btn-deep-link:hover {
+      background-color: rgba(230, 0, 0, 0.1);
+    }
+
+    #qrcode-wrapper {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Lipe Space</h1>
+    <p class="subtitle">Barber Lounge - MB WAY</p>
+
+    <div class="input-group">
+      <label for="phone">Número de Telemóvel:</label>
+      <input type="tel" id="phone" placeholder="Ex: 912345678" value="912345678">
+    </div>
+
+    <div class="input-group">
+      <label for="amount">Valor (€):</label>
+      <input type="number" id="amount" step="0.01" placeholder="Ex: 15.00" value="10.00">
+    </div>
+
+    <button onclick="gerarQRCode()">Gerar QR Code</button>
+    <button class="btn-deep-link" onclick="abrirMBWayDireto()">Abrir Direto na App MB WAY</button>
+
+    <div id="qrcode-wrapper">
+      <div id="qrcode"></div>
+    </div>
+  </div>
+
+  <script>
+    let qrcodeContainer = document.getElementById("qrcode");
+    let qrcodeObj = null;
+
+    function obterTelefoneFormatado() {
+      let rawPhone = document.getElementById("phone").value.replace(/\D/g, "");
+      // Remove o prefixo 351 se o utilizador digitou com indicativo
+      if (rawPhone.startsWith("351") && rawPhone.length > 9) {
+        rawPhone = rawPhone.substring(3);
+      }
+      return rawPhone;
+    }
+
+    function gerarQRCode() {
+      let phone = obterTelefoneFormatado();
+      let amount = document.getElementById("amount").value.trim();
+
+      if (!phone || phone.length < 9) {
+        alert("Por favor, introduza um número de telemóvel válido de 9 dígitos.");
+        return;
+      }
+
+      // Formato padrão aceito pelos scanners de transferência das apps bancárias e MB WAY
+      let payloadQRCode = `TEL:${phone}`;
+
+      qrcodeContainer.innerHTML = "";
+
+      // Gera o QR Code com parâmetros otimizados para scanner móvel
+      qrcodeObj = new QRCode(qrcodeContainer, {
+        text: payloadQRCode,
+        width: 210,
+        height: 210,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function abrirMBWayDireto() {
+      let phone = obterTelefoneFormatado();
+      let amount = parseFloat(document.getElementById("amount").value.trim() || 0).toFixed(2);
+      
+      // Deeplink para abertura direta quando clicado num smartphone
+      window.location.href = `mbway://send?phone=351${phone}&amount=${amount}`;
+    }
+
+    // Gerar o QR Code inicial
+    gerarQRCode();
+  </script>
+
+</body>
+</html>
