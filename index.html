@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador QR Code MB WAY</title>
+  <!-- Biblioteca para gerar QR Code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #e60000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #qrcode {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Gerador QR Code MB WAY</h2>
+
+  <label for="phone">Número de Telemóvel:</label>
+  <input type="tel" id="phone" placeholder="Ex: 912345678" value="912345678">
+
+  <label for="amount">Valor (€):</label>
+  <input type="number" id="amount" step="0.01" placeholder="Ex: 15.50" value="10.00">
+
+  <button onclick="gerarQRCode()">Gerar QR Code</button>
+
+  <div id="qrcode"></div>
+
+  <script>
+    let qrcodeContainer = document.getElementById("qrcode");
+    let qrcodeObj = null;
+
+    function gerarQRCode() {
+      let phone = document.getElementById("phone").value.trim();
+      let amount = document.getElementById("amount").value.trim();
+
+      if (!phone || !amount) {
+        alert("Por favor, preencha o número de telemóvel e o valor.");
+        return;
+      }
+
+      // Adiciona o indicativo de Portugal (351) se não estiver presente
+      if (!phone.startsWith("351") && !phone.startsWith("+351")) {
+        phone = "351" + phone;
+      }
+      phone = phone.replace("+", "");
+
+      // Formato do URI do MB WAY
+      let mbwayUrl = `mbway://send?phone=${phone}&amount=${parseFloat(amount).toFixed(2)}`;
+
+      // Limpa o QR Code anterior, se existir
+      qrcodeContainer.innerHTML = "";
+
+      // Gera o novo QR Code
+      qrcodeObj = new QRCode(qrcodeContainer, {
+        text: mbwayUrl,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    // Gerar um inicial ao carregar a página
+    gerarQRCode();
+  </script>
+
+</body>
+</html>
